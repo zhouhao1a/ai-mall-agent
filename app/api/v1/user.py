@@ -27,4 +27,4 @@ async def login(data: UserLoginIn, db: AsyncSession = Depends(get_db)):
     user = await login_service(db, data.phone, data.password)
 
     token = create_access_token(user.id)
-    return success(TokenOut.model(token=token).model_dump())
+    return success(TokenOut(token=token).model_dump())
