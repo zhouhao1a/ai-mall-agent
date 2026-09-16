@@ -1,6 +1,9 @@
 from datetime import datetime, timezone, timedelta
+from typing import Dict, Any, Type
+
 import bcrypt
 import jwt
+from jwt import InvalidTokenError
 
 from app.core.config import settings
 
@@ -27,9 +30,7 @@ def create_access_token(user_id: int) -> str:
     return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
 
 
-def decode_access_token(token: str) -> dict | None:
+def decode_access_token(token: str) -> dict:
   # 解开通行证。有效返回 payload，无效（过期/被篡改）返回 None。
-    try:
         return jwt.decode(token, settings.jwt_secret, algorithms=["HS256"])
-    except jwt.InvalidTokenError:
-        return None
+
