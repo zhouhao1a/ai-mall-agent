@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import BizError
 from app.core.security import hash_password, verify_password
 from app.models.user import User
+from app.schemas.user import UserUpdateIn
 
 
 async def register(db: AsyncSession, phone: str, password: str) -> User:
@@ -50,3 +51,12 @@ async def login(db: AsyncSession, phone: str, password: str) -> User:
         raise BizError("手机号或密码错误")
 
     return user
+
+
+async def update_profile(db: AsyncSession, user: User, data:UserUpdateIn):
+
+    if data.nickname is not None: user.nickname = data.nickname
+    await db.commit()
+    await db.refresh(user)
+    return user
+

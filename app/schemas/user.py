@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -43,3 +44,10 @@ class UserLoginIn(BaseModel):
 
 class TokenOut(BaseModel):
     token: str
+
+
+class UserUpdateIn(BaseModel):
+    nickname:Optional[str]=Field(
+        None,
+        max_length=32
+    )
