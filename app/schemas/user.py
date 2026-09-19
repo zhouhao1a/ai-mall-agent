@@ -17,7 +17,12 @@ class UserRegisterIn(BaseModel):
         min_length=6,
         max_length=72
     )
-
+    sms_code:str=Field(
+        ...,
+        min_length=6,
+        max_length=6,
+        pattern=r"^\d{6}$"
+    )
 
 class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -50,4 +55,12 @@ class UserUpdateIn(BaseModel):
     nickname:Optional[str]=Field(
         None,
         max_length=32
+    )
+
+class SmsCodeIn(BaseModel):
+    phone: str = Field(
+        ...,
+        min_length=11,
+        max_length=11,
+        pattern=r"^1[3-9]\d{9}$",
     )

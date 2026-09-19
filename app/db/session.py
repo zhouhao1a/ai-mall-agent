@@ -12,7 +12,7 @@ AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 #就是个依赖，定义函数时让带上，类似于鉴权的依赖
 async def get_db():
-  async with AsyncSessionLocal() as session:
+    async with AsyncSessionLocal() as session:
       try:
           yield session
       except Exception:
