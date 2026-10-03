@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>计时器</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0c12;
+      --card: rgba(15, 18, 28, 0.82);
+      --surface: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.11);
+      --text: #f7f8fc;
+      --muted: #9197aa;
+      --accent: #8b7cff;
+      --accent2: #58d7c4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--text);
+      font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(139, 124, 255, .2), transparent 35%),
+        radial-gradient(circle at 85% 80%, rgba(88, 215, 196, .14), transparent 34%),
+        var(--bg);
+    }
+    main {
+      width: min(92vw, 500px);
+      padding: 34px;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      background: var(--card);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, .42);
+      backdrop-filter: blur(20px);
+    }
+    .eyebrow {
+      margin: 0;
+      color: var(--accent2);
+      font-size: .76rem;
+      font-weight: 700;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+    h1 { margin: 10px 0 24px; font-size: 1.35rem; }
+    .timer-ring {
+      --progress: 100%;
+      width: min(68vw, 300px);
+      aspect-ratio: 1;
+      margin: 0 auto 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) var(--progress), rgba(255, 255, 255, .08) 0);
+      box-shadow: 0 0 45px rgba(139, 124, 255, .18);
+    }
+    .timer-ring.running { box-shadow: 0 0 65px rgba(139, 124, 255, .32); }
+    .timer-face {
+      width: calc(100% - 14px);
+      aspect-ratio: 1;
+      display: grid;
+      place-content: center;
+      border: 1px solid rgba(255, 255, 255, .05);
+      border-radius: inherit;
+      background: #10131d;
+    }
+    #time {
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(3.4rem, 15vw, 5.3rem);
+      font-weight: 300;
+      letter-spacing: -.07em;
+    }
+    #status {
+      min-height: 20px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .82rem;
+      letter-spacing: .08em;
+    }
+    .presets, .settings, .actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    .presets { margin-bottom: 22px; }
+    button, input { font: inherit; }
+    button {
+      min-width: 86px;
+      padding: 11px 18px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      cursor: pointer;
+    }
+    button:hover {
+      border-color: rgba(255, 255, 255, .22);
+      background: rgba(255, 255, 255, .12);
+    }
+    button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .settings { margin-bottom: 18px; }
+    .time-input { display: flex; align-items: center; gap: 7px; }
+    input {
+      width: 72px;
+      padding: 9px 8px;
+      color: var(--text);
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, .18);
+    }
+    .label { color: var(--muted); font-size: .78rem; }
+    #start {
+      min-width: 132px;
+      color: #0c0d13;
+      border: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      font-weight: 750;
+    }
+    #reset { color: var(--muted); }
+    .hint { margin: 22px 0 0; color: var(--muted); font-size: .73rem; }
+    @media (max-width: 480px) {
+      main { padding: 28px 18px; border-radius: 24px; }
+      button { min-width: 72px; padding-inline: 14px; }
+      .presets { gap: 7px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Focus Mode</p>
+    <h1>专注计时器</h1>
+    <div class="timer-ring" id="timerRing">
+      <div class="timer-face">
+        <div id="time">25:00</div>
+        <div id="status">准备开始</div>
+      </div>
+    </div>
+    <div class="presets" aria-label="快捷时间">
+      <button type="button" data-minutes="5">5 分钟</button>
+      <button type="button" data-minutes="15">15 分钟</button>
+      <button type="button" data-minutes="25">25 分钟</button>
+      <button type="button" data-minutes="45">45 分钟</button>
+    </div>
+    <div class="settings">
+      <label class="time-input">
+        <span class="label">分钟</span>
+        <input id="minutes" type="number" min="0" max="999" value="25">
+      </label>
+      <label class="time-input">
+        <span class="label">秒</span>
+        <input id="seconds" type="number" min="0" max="59" value="0">
+      </label>
+    </div>
+    <div class="actions">
+      <button id="reset" type="button">重置</button>
+      <button id="start" type="button">开始计时</button>
+    </div>
+    <p class="hint">空格键开始 / 暂停 · R 键重置</p>
+  </main>
+  <script>
+    const timeDisplay = document.querySelector("#time");
+    const statusDisplay = document.querySelector("#status");
+    const timerRing = document.querySelector("#timerRing");
+    const minutesInput = document.querySelector("#minutes");
+    const secondsInput = document.querySelector("#seconds");
+    const startButton = document.querySelector("#start");
+    const resetButton = document.querySelector("#reset");
+    const initialTitle = document.title;
+
+    let totalSeconds = 25 * 60;
+    let remainingMilliseconds = totalSeconds * 1000;
+    let targetTime = 0;
+    let intervalId = null;
+    let isRunning = false;
+
+    function readDuration() {
+      const minutes = Math.max(0, Math.floor(Number(minutesInput.value) || 0));
+      const seconds = Math.min(59, Math.max(0, Math.floor(Number(secondsInput.value) || 0)));
+      minutesInput.value = minutes;
+      secondsInput.value = seconds;
+      return Math.max(1, minutes * 60 + seconds);
+    }
+
+    function formatTime(milliseconds) {
+      const seconds = Math.max(0, Math.ceil(milliseconds / 1000));
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainder = seconds % 60;
+      const twoDigits = (value) => String(value).padStart(2, "0");
+      return hours > 0
+        ? `${hours}:${twoDigits(minutes)}:${twoDigits(remainder)}`
+        : `${twoDigits(minutes)}:${twoDigits(remainder)}`;
+    }
+
+    function render() {
+      const text = formatTime(remainingMilliseconds);
+      const progress = totalSeconds > 0
+        ? Math.max(0, Math.min(100, (remainingMilliseconds / (totalSeconds * 1000)) * 100))
+        : 0;
+      timeDisplay.textContent = text;
+      timerRing.style.setProperty("--progress", `${progress}%`);
+      timerRing.classList.toggle("running", isRunning);
+      document.title = isRunning ? `${text} · 计时中` : initialTitle;
+    }
+
+    function playAlarm() {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const context = new AudioContext();
+      [0, 0.22, 0.44].forEach((offset) => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(880, context.currentTime + offset);
+        gain.gain.setValueAtTime(0.0001, context.currentTime + offset);
+        gain.gain.exponentialRampToValueAtTime(0.18, context.currentTime + offset + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + offset + 0.18);
+        oscillator.connect(gain).connect(context.destination);
+        oscillator.start(context.currentTime + offset);
+        oscillator.stop(context.currentTime + offset + 0.2);
+      });
+    }
+
+    function finish() {
+      clearInterval(intervalId);
+      intervalId = null;
+      isRunning = false;
+      remainingMilliseconds = 0;
+      statusDisplay.textContent = "时间到";
+      startButton.textContent = "再试一次";
+      render();
+      playAlarm();
+    }
+
+    function tick() {
+      remainingMilliseconds = Math.max(0, targetTime - Date.now());
+      render();
+      if (remainingMilliseconds <= 0) finish();
+    }
+
+    function start() {
+      if (remainingMilliseconds <= 0) reset();
+      totalSeconds = Math.ceil(remainingMilliseconds / 1000);
+      targetTime = Date.now() + remainingMilliseconds;
+      isRunning = true;
+      statusDisplay.textContent = "计时进行中";
+      startButton.textContent = "暂停";
+      intervalId = setInterval(tick, 100);
+      render();
+    }
+
+    function pause() {
+      clearInterval(intervalId);
+      intervalId = null;
+      isRunning = false;
+      remainingMilliseconds = Math.max(0, targetTime - Date.now());
+      statusDisplay.textContent = "已暂停";
+      startButton.textContent = "继续";
+      render();
+    }
+
+    function toggleTimer() {
+      isRunning ? pause() : start();
+    }
+
+    function reset() {
+      clearInterval(intervalId);
+      intervalId = null;
+      isRunning = false;
+      totalSeconds = readDuration();
+      remainingMilliseconds = totalSeconds * 1000;
+      statusDisplay.textContent = "准备开始";
+      startButton.textContent = "开始计时";
+      render();
+    }
+
+    function setDuration(minutes) {
+      minutesInput.value = minutes;
+      secondsInput.value = 0;
+      reset();
+    }
+
+    document.querySelectorAll("[data-minutes]").forEach((button) => {
+      button.addEventListener("click", () => setDuration(Number(button.dataset.minutes)));
+    });
+    [minutesInput, secondsInput].forEach((input) => input.addEventListener("change", reset));
+    startButton.addEventListener("click", toggleTimer);
+    resetButton.addEventListener("click", reset);
+
+    document.addEventListener("keydown", (event) => {
+      const isTyping = ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName);
+      if (event.code === "Space" && !isTyping) {
+        event.preventDefault();
+        toggleTimer();
+      }
+      if (event.key.toLowerCase() === "r" && !isTyping) reset();
+    });
+
+    reset();
+  </script>
+</body>
+</html>
