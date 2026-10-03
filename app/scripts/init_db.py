@@ -5,6 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.dialects import mysql
 from sqlalchemy.schema import CreateTable
 import app.models.user
+import app.models.category
 # # ← 必须 import，否则 Base.metadata 里没有这张表
 from app.db.base import Base
 from app.db.session import engine
