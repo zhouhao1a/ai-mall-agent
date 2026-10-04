@@ -36,5 +36,5 @@ def create_access_token(user_id: int) -> str:
 
 
 def decode_access_token(token: str) -> dict:
-  # 解开通行证。有效返回 payload，无效（过期/被篡改）返回 None。
+  # 解开通行证。有效返回 payload，无效（过期/被篡改）抛出异常。
         return jwt.decode(token, settings.jwt_secret, algorithms=["HS256"])
