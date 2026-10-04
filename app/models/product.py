@@ -1,3 +1,9 @@
+"""
+商品：Spu（标准产品单位，即商品本身）+ Sku（具体规格）。
+一个 SPU 对多个 SKU；价格与库存只存 SKU，SPU 不存价格以免双写不一致。
+status 分两层：SPU = 上架/下架，SKU = 在售/停售。
+"""
+
 from datetime import datetime
 from decimal import Decimal
 

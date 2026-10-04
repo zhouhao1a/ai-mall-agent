@@ -1,3 +1,9 @@
+"""
+商品分类：一张表自关联，支持无限级。
+parent_id 为 NULL = 一级分类，有值 = 挂在某个父分类下。
+同级同名靠 service 层查重保证；唯一约束只对 parent_id 非 NULL 的行生效（NULL 不算重复）。
+"""
+
 from datetime import datetime
 
 from sqlalchemy import String, Integer, DateTime, func, ForeignKey, UniqueConstraint

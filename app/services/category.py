@@ -1,3 +1,9 @@
+"""
+分类域服务层：创建分类、查询分类列表。
+创建流程：验父（parent_id 非空时）→ 同级查重 → 造对象 → 入库（含并发兜底）。
+错误码：3001 同级重名 / 3002 父分类不存在。
+"""
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,4 +40,3 @@ async  def list_categories(db: AsyncSession):
     stmt=select(Category).order_by(Category.sort,Category.id)
     result=await db.execute(stmt)
     return result.scalars().all()
-

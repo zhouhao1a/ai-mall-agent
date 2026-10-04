@@ -1,3 +1,9 @@
+"""
+用户域服务层：注册 / 登录 / 改资料的业务规则。
+只依赖 db、models、schemas；不碰 HTTP、不签发 token。
+失败一律 raise BizError，由全局处理器统一翻译。
+"""
+
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -59,4 +65,3 @@ async def update_profile(db: AsyncSession, user: User, data:UserUpdateIn):
     await db.commit()
     await db.refresh(user)
     return user
-

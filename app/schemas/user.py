@@ -1,3 +1,9 @@
+"""
+用户域出入参模型（pydantic）。
+分界线：入参（XxxIn）带校验规则，出参（UserOut）只声明结构不校验。
+UserOut 开了 from_attributes=True，才能直接吃 ORM 对象。
+"""
+
 from datetime import datetime
 from typing import Optional
 

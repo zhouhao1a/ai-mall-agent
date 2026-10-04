@@ -1,3 +1,9 @@
+"""
+应用入口：创建 FastAPI 实例、挂载各域路由、注册全局异常处理器。
+业务逻辑不在这里：接口看 app/api/，规则看 app/services/。
+另有一个 / 路由返回本地计时器页面（app/static/timer.html），与电商主线无关。
+"""
+
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -5,7 +11,7 @@ from fastapi.responses import FileResponse
 from app.api.v1 import user as user_api,category as  category_api  # ← 导入你写的路由文件
 import uvicorn
 
-from app.core.exception_handers import biz_error_handler
+from app.core.exception_handlers import biz_error_handler
 from app.core.exceptions import BizError
 
 app = FastAPI(title="AiMall 电商后端 API")

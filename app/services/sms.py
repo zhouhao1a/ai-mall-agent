@@ -1,3 +1,10 @@
+"""
+短信验证码（开发期是假短信：验证码打印到控制台，不接服务商）。
+Redis 两类 key，都用 TTL 到期自动清理：
+  sms:limit:{phone}  发送频控 EX 60，60 秒内只能发一次
+  sms:code:{phone}   验证码本体 EX 300，校验通过后删除（一次性）
+"""
+
 import secrets
 from redis.asyncio import Redis
 

@@ -1,3 +1,7 @@
+"""
+自检脚本：验证 JWT 能正常签发、正常解析，篡改后解析失败。
+"""
+
 from app.core.security import create_access_token, decode_access_token
 
 token = create_access_token(1)

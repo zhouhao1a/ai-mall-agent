@@ -1,3 +1,8 @@
+"""
+分类接口层：创建分类（需登录）、查询分类列表（公开）。
+业务规则在 app/services/category.py。
+"""
+
 from fastapi import APIRouter,Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,7 +30,3 @@ async def list_categories(
 ):
     cats=await list_categories_service(db)
     return success([CategoryOut.model_validate(c).model_dump() for c in cats])
-
-
-
-

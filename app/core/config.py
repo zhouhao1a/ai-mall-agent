@@ -1,3 +1,8 @@
+"""
+全局配置：用 pydantic-settings 从 .env 读环境变量。
+其他地方统一 import settings 取值，不要直接在业务代码里读 os.environ。
+"""
+
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict

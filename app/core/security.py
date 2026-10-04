@@ -1,3 +1,8 @@
+"""
+安全工具：密码哈希与校验（bcrypt）、JWT 的签发与解析。
+纯函数，不依赖数据库、不依赖请求上下文；签发 token 的时机由接口层决定。
+"""
+
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Any, Type
 
@@ -33,4 +38,3 @@ def create_access_token(user_id: int) -> str:
 def decode_access_token(token: str) -> dict:
   # 解开通行证。有效返回 payload，无效（过期/被篡改）返回 None。
         return jwt.decode(token, settings.jwt_secret, algorithms=["HS256"])
-

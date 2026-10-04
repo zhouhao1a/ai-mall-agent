@@ -1,3 +1,9 @@
+"""
+数据库连接与会话：建引擎、建会话工厂、提供每请求一个会话的依赖。
+接口层用 db: AsyncSession = Depends(get_db) 取会话。
+不定义表（models 的事），不写业务规则（services 的事）。
+"""
+
 # 创建异步引擎：相当于打开一条通往MySQL的通道
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from app.core.config import settings

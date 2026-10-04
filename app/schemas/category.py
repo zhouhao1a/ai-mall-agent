@@ -1,3 +1,9 @@
+"""
+分类域出入参模型。
+CategoryCreateIn：parent_id 可不传（None = 一级分类），sort/status 有默认值。
+CategoryOut：只声明结构，不加校验规则。
+"""
+
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
 
@@ -20,4 +26,3 @@ class CategoryOut(BaseModel):
     sort:int
     status:int
     created_at:datetime
-

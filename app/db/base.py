@@ -1,3 +1,9 @@
+"""
+ORM 基类：所有模型继承它，并统一主键/唯一索引/外键的命名规则。
+命名规则让数据库里的约束名字可预测（如 uq_categories_parent_id），
+看报错就能定位到是哪张表的哪个约束。
+"""
+
 from sqlalchemy import MetaData
 from sqlalchemy.orm import DeclarativeBase
 

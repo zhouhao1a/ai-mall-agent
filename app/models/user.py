@@ -1,3 +1,8 @@
+"""
+用户表：电商系统的账号主体，购物车/订单/地址最终都挂在它下面。
+字段含义见每个 mapped_column 的 comment（会同步成数据库里的列注释）。
+"""
+
 from datetime import datetime
 from sqlalchemy import DateTime, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column

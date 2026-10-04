@@ -1,3 +1,8 @@
+"""
+用户域接口层：注册 / 登录 / 当前用户 / 改资料 / 取验证码。
+只做三件事：收参数、调 service、把结果包成统一响应。业务规则在 app/services/user.py。
+"""
+
 from fastapi import APIRouter, Depends
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,4 +58,3 @@ async def update_me(data: UserUpdateIn, current_user: User = Depends(get_current
 async def sms_code(data: SmsCodeIn, r: Redis = Depends(get_redis)):
     await send_code(r, data.phone)
     return success(message="验证码已发送")
-
