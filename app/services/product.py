@@ -1,3 +1,6 @@
+from decimal import Decimal
+
+from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -23,3 +26,16 @@ async def create_spu(db:AsyncSession, data:SpuCreateIn) -> Spu:
         raise BizError("商品创建失败，请重试",code=3004)
     await db.refresh(spu)
     return spu
+
+
+async def list_spus(db:AsyncSession, page: int, page_size: int ) -> list[tuple[Spu, Decimal | None]]:
+
+    stmt=(
+        select(Spu,func.min(Sku.price))   # 我要：SPU 整行 + 一个"最低价"列
+        .outerjoin(Sku,Sku.spu_id==Spu.id)    #把 skus 接上来（outerjoin = LEFT JOIN）
+        .group_by(Spu.id)                      # 按商品分组，才能对每组求 min
+        .order_by(Spu.id.desc())               # 排序
+        .limit(page_size).offset((page-1) * page_size) # 分页
+    )
+    rows = (await db.execute(stmt)).all()
+    return [(spu, min_price) for spu, min_price in rows]

@@ -48,4 +48,8 @@ class SkuOut(BaseModel):
     created_at:datetime
 
 
-    
+class SpuListItemOut(SpuOut):
+    model_config = ConfigDict(from_attributes=True)
+    min_price: Decimal|None=None
+
+
