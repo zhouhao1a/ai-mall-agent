@@ -4,8 +4,7 @@ import asyncio
 from sqlalchemy import text
 from sqlalchemy.dialects import mysql
 from sqlalchemy.schema import CreateTable
-import app.models.user
-import app.models.category
+import app.models  # 一次性登记所有模型（见 app/models/__init__.py）
 # # ← 必须 import，否则 Base.metadata 里没有这张表
 from app.db.base import Base
 from app.db.session import engine

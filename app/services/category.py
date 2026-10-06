@@ -20,8 +20,11 @@ async def create_category(
         cate=await db.get(Category, data.parent_id)
         if cate is None:
             raise BizError("父分类不存在",code=3002)
+
     stmt = select(Category).where(Category.parent_id ==data.parent_id,Category.name==data.name)
+
     result = await db.execute(stmt)
+
     exists = result.scalar_one_or_none()  # 捞不到 → None；捞到 → User 对象
     if exists:
         raise BizError("同级下已存在同名分类", code=3001)
