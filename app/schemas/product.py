@@ -5,6 +5,8 @@
 """
 from datetime import datetime
 from decimal import Decimal
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -58,3 +60,11 @@ class SpuUpdateIn(BaseModel):
     subtitle: str | None = None
     main_image: str | None = None
     detail: str | None = None
+
+
+class SkuUpdateIn(BaseModel):
+    price: Decimal | None = Field(default=None, gt=0, max_digits=10, decimal_places=2)
+    stock: int | None = Field(default=None, ge=0)
+
+class SpuStatusIn(BaseModel):
+    status: Literal[0, 1]

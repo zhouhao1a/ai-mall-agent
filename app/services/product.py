@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BizError
 from app.models import Spu, Category, Sku
-from app.schemas.product import SpuCreateIn, SpuUpdateIn
+from app.schemas.product import SpuCreateIn, SpuUpdateIn, SkuUpdateIn
 
 
 async def create_spu(db:AsyncSession, data:SpuCreateIn) -> Spu:
@@ -33,7 +33,8 @@ async def list_spus(db:AsyncSession, page: int, page_size: int ) -> list[tuple[S
     stmt=(
         select(Spu,func.min(Sku.price))   # 我要：SPU 整行 + 一个"最低价"列
         .outerjoin(Sku,Sku.spu_id==Spu.id)    #把 skus 接上来（outerjoin = LEFT JOIN）
-        .group_by(Spu.id)                      # 按商品分组，才能对每组求 min
+        .group_by(Spu.id)
+        .where(Spu.status == 1)# 按商品分组，才能对每组求 min
         .order_by(Spu.id.desc())               # 排序
         .limit(page_size).offset((page-1) * page_size) # 分页
     )
@@ -48,7 +49,28 @@ async def update_spu(db:AsyncSession, spu_id:int, data:SpuUpdateIn)->Spu:
         raise BizError("商品不存在",code=3005)
     payload = data.model_dump(exclude_unset=True)
     for k, v in payload.items():
-        setattr(spu, k, v)
+        setattr(spu, k, v)  #setattr(spu, "name", "iPhone 16") 完全等价于 spu.name = "iPhone 16"。
+    await db.commit()
+    await db.refresh(spu)
+    return spu
+
+
+async def update_sku(db: AsyncSession, sku_id: int, data: SkuUpdateIn) -> Sku:
+    sku = await db.get(Sku, sku_id)
+    if sku is None:
+        raise BizError("商品规格不存在",code=3006)
+    payload = data.model_dump(exclude_unset=True)
+    for k, v in payload.items():
+        setattr(sku, k, v)
+    await db.commit()
+    await db.refresh(sku)
+    return sku
+
+async def update_spu_status(db:AsyncSession, spu_id:int, status:int)->Spu:
+    spu = await db.get(Spu, spu_id)
+    if spu is None:
+        raise BizError("商品不存在", code=3005)
+    spu.status = status
     await db.commit()
     await db.refresh(spu)
     return spu
