@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BizError
 from app.models import Spu, Category, Sku
-from app.schemas.product import SpuCreateIn
+from app.schemas.product import SpuCreateIn, SpuUpdateIn
 
 
 async def create_spu(db:AsyncSession, data:SpuCreateIn) -> Spu:
@@ -39,3 +39,16 @@ async def list_spus(db:AsyncSession, page: int, page_size: int ) -> list[tuple[S
     )
     rows = (await db.execute(stmt)).all()
     return [(spu, min_price) for spu, min_price in rows]
+
+
+
+async def update_spu(db:AsyncSession, spu_id:int, data:SpuUpdateIn)->Spu:
+    spu = await db.get(Spu, spu_id)
+    if spu is None:
+        raise BizError("商品不存在",code=3005)
+    payload = data.model_dump(exclude_unset=True)
+    for k, v in payload.items():
+        setattr(spu, k, v)
+    await db.commit()
+    await db.refresh(spu)
+    return spu

@@ -7,8 +7,8 @@ from app.api.v1.deps import get_current_user
 from app.core.response import success
 from app.db.session import get_db
 from app.models import User
-from app.schemas.product import SpuCreateIn, SpuOut, SpuListItemOut
-from app.services.product import create_spu,list_spus as list_spus_service
+from app.schemas.product import SpuCreateIn, SpuOut, SpuListItemOut, SpuUpdateIn
+from app.services.product import create_spu, list_spus as list_spus_service, update_spu
 
 router = APIRouter(prefix="/api/v1", tags=["商品-详情"])
 @router.post("/spus", summary="创建商品")
@@ -28,6 +28,10 @@ async def list_products(db: AsyncSession = Depends(get_db), page: int = 1, page_
         item = SpuListItemOut.model_validate(spu)
         item.min_price = min_price
         data.append(item.model_dump(mode="json"))
-
     return success(data)
 
+
+@router.patch("/spus/{spu_id}",summary="修改spu字段")
+async def update_product(spu_id:int,data:SpuUpdateIn,_: User = Depends(get_current_user),db: AsyncSession = Depends(get_db)):
+    uat=await update_spu(db,spu_id, data)
+    return success(SpuOut.model_validate(uat).model_dump(mode="json"))

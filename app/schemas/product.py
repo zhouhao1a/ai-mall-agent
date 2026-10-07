@@ -52,4 +52,9 @@ class SpuListItemOut(SpuOut):
     model_config = ConfigDict(from_attributes=True)
     min_price: Decimal|None=None
 
-
+class SpuUpdateIn(BaseModel):
+    category_id: int| None=None
+    name: str|None=None
+    subtitle: str | None = None
+    main_image: str | None = None
+    detail: str | None = None
