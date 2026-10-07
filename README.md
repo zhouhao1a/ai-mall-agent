@@ -135,6 +135,7 @@ HTTP 请求
 | GET | `/api/v1/categories` | 分类列表（按 sort、id 升序） | 否 |
 | POST | `/api/v1/spus` | 创建商品（SPU + 默认 SKU，同一事务） | 是 |
 | GET | `/api/v1/spus` | 商品列表（含起售价 min(sku.price)） | 否 |
+| PATCH | `/api/v1/spus/{id}` | 修改商品基本信息（局部更新） | 是 |
 
 > 需要登录的接口在请求头带 `Authorization: Bearer <token>`。
 > 在 Swagger 里点右上角 🔒 Authorize，把登录返回的 `token` 原文粘进去即可。
